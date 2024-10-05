@@ -14,8 +14,8 @@ To run the program, invoke the Python interpreter, specify the program name, and
 
 **Example:**
 
-    python3 arqrel.py --path [insert path]
+    `python3 arqrel.py --path [insert path]`
 
 **Example 2 (verbose mode):**
 
-    python3 arqrel.py -v --path [insert path]
+    `python3 arqrel.py -v --path [insert path]`
