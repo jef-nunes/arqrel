@@ -1,35 +1,35 @@
-## Sobre
+About
 
-O que esse programa faz:
+What this program does:
 
-I. Inicia uma busca por arquivos no caminho especificado pelo usuário
+I. Initiates a search for files in the path specified by the user.
 
-II. Para cada arquivo encontrado, cria um dicionário formatado o qual contem os atributos do arquivo. Adiciona também um atributo de hash SHA256, e um atributo que classifica o arquivo dentro de umas das categorias:
+II. For each file found, it creates a formatted dictionary containing the file's attributes. It also adds a SHA256 hash attribute and a classification attribute categorizing the file into one of the following categories:
 
-    Arquivo de configuração
-    Shell script Linux
-    Arquivo fonte de linguagens
-    Bytecode de linguagens
-    Executável Windows
-    Arquivo de lotes Windows
-    Script PowerShell Windows
-    Arquivo do pacote Office Windows
-    Arquivo de mídia
-    Outros binários
+    Configuration file
+    Linux shell script
+    Source file for programming languages
+    Bytecode for programming languages
+    Windows executable
+    Windows batch file
+    Windows PowerShell script
+    Windows Office document
+    Media file
+    Other binaries
 
-III. Ao fim da busca, são criados dois relatórios:
+III. At the end of the search, two reports are generated:
 
-    summary.json: resumo sobre os resultados.
-    attributes.json: detalhes sobre cada arquivo encontrado.
+    summary.json: a summary of the results.
+    attributes.json: details about each file found.
 
-## Executando
+Running
 
-Para executar o programa chame o interpretador python, nome do programa e especifique uma flag --path a qual deve ser sucedida pelo caminho (sem aspas) do diretório o qual você deseja realizar uma busca:
+To run the program, invoke the Python interpreter, specify the program name, and include a --path flag followed by the path (without quotes) of the directory you wish to search:
 
-Exemplo:
+Example:
 
-    python3 arqrel.py --path home
+    python3 arqrel.py --path [insert path]
 
-Para printar no terminal cada arquivo encontrado pelo programa, passe a flag -v (ou --verbose):
+To print each file found by the program to the terminal, pass the -v (or --verbose) flag:
 
-    python3 arqrel.py -v --path home 
+    python3 arqrel.py -v --path [insert path]
