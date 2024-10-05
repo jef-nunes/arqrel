@@ -8,6 +8,7 @@ import json
 import pprint
 
 class Utils:
+    # Predefined file extensions for different categories
     config_extensions = [
         '.code-workspace', '.sln', '.csproj', '.vbproj', '.xcodeproj',
         '.apkproject', '.gradle', '.iml', '.project', '.classpath',
@@ -49,16 +50,19 @@ class Utils:
         '.dll', '.iso', '.dmg', '.rpm', '.deb', '.msi'
     ]
 
+     # Load JSON data from a file
     @classmethod
     def json_parse(cls, file_path: str) -> dict:
         with open(file_path, 'r') as file:
             return json.load(file)
     
+    # Dump JSON data into a file
     @classmethod
     def json_dump(cls, file_path: str, data: dict) -> None:
         with open(file_path, 'w') as f:
             json.dump(data, f, indent=4)
     
+    # Calculate SHA-256 hash of a file
     @classmethod
     def hash_sum(cls, target: str) -> str:
         hash_object = sha256()
@@ -71,6 +75,7 @@ class Utils:
             return "Error"
         return hash_object.hexdigest()
 
+    # Return a tuple with formatted file size
     @classmethod
     def get_fmt_size_tuple(cls, target_path: str) -> Tuple[float, str]:
         size = float(Path(target_path).stat().st_size)
@@ -83,12 +88,14 @@ class Utils:
         else:
             return size / (1024 * 1024 * 1024), "GB"
 
+    # Format datetime as string
     @classmethod
     def get_fmt_datetime(cls, dt: datetime = datetime.now()) -> str:
         if dt is None:
             return "N/A"
         return dt.strftime("%Y-%m-%d %H:%M:%S")
 
+    # Gather metadata of a file, including hash, permissions, and size
     @classmethod
     def get_file_metadata(cls, file_path: str) -> Dict[str, any]:
         _stat = stat(file_path)
@@ -110,63 +117,41 @@ class Utils:
         return metadata
 
 class ArqRel:
-    #  search_completed: bool
-    #  cli_verbose_mode: bool
-    #  summary_only: bool
-    #  time_begin: datetime
-    #  time_finish: datetime
-    #  time_taken: datetime
-    #  starting_dir: Path
-    #  found_files_total: int
-    #  found_dirs_total: int
-    #  found_win_exe: int
-    #  found_win_bat: int
-    #  found_win_office: int
-    #  found_media: int
-    #  found_sources: int
-    #  found_config: int
-    #  found_bytecode: int
-    #  found_bin_other: int
-    #  idv_attributes: List[Dict]
-    #  search_summary: dict
+    # Initialize instance variables to track file and directory search results
     def __init__(self) -> None:
-        self.search_completed = False
-        self.cli_verbose_mode = False
-        self.starting_dir = None
-        self.time_begin = None
-        self.time_finish = None
-        self.time_taken = None
+        self.search_completed: bool = False
+        self.cli_verbose_mode: bool = False
+        self.starting_dir: Path = None
+        self.time_begin: datetime = None
+        self.time_finish: datetime = None
+        self.time_taken: datetime = None
         self.found_dirs_total = 0
-        self.found_files_total = 0
-        self.found_win_exe = 0
-        self.found_win_bat = 0
-        self.found_win_pwshell = 0
-        self.found_win_office = 0
-        self.found_media = 0
-        self.found_sources = 0
-        self.found_config = 0
-        self.found_bin_other = 0
-        self.found_bytecode = 0
-        self.found_linux_sh = 0
-        self.data_from_search = []
-        self.search_summary = {}
-        self.search_summary_only = False
+        self.found_files_total: int = 0
+        self.found_win_exe: int = 0
+        self.found_win_bat: int = 0
+        self.found_win_pwshell: int = 0
+        self.found_win_office: int = 0
+        self.found_media: int = 0
+        self.found_sources: int = 0
+        self.found_config: int = 0
+        self.found_bin_other: int = 0
+        self.found_bytecode: int = 0
+        self.found_linux_sh: int = 0
+        self.idv_attributes: List[Dict] = []
+        self.search_summary: Dict = {}
 
-    def set_summary_only(self, val: bool) -> None:
-        self.search_summary_only = val
-
+    # Enabling verbose mode
     def set_cli_verbose_mode(self, val: bool) -> None:
         self.cli_verbose_mode = val
 
-    def get_starting_dir(self) -> Path | None:
-        return self.starting_dir
-
+    # Set the starting directory for the search and validate the path
     def set_starting_dir(self, StrPath: str) -> None:
         if not Path(StrPath).exists() or not Path(StrPath).is_dir():
             print("Error - Invalid path.")
             return
         self.starting_dir = Path(StrPath)
 
+    # Create JSON logs for the search
     def create_json_logs(self) -> None:
         now = datetime.now()
         timestamp: str = now.strftime("%Y-%m-%d_%H-%M-%S")
@@ -184,6 +169,7 @@ class ArqRel:
         Utils.json_dump(summary_json, self.search_summary)
         print(f"New log created at: {this_log_dir}")
 
+    # Categorize a file based on its extension and count the occurrence
     def _categorize_file(self, file_path: str) -> None:
         name = Path(file_path).name
         extension: str = name[name.rfind(".")+1:]
@@ -230,7 +216,8 @@ class ArqRel:
                 print(f"Found a Microsoft Office file: '{file_path}'")
             self.found_win_office += 1
 
-    def _finalize_search(self, found_files: List[Path]) -> None:
+    # Format search results
+    def _fmt_search_results(self, found_files: List[Path]) -> None:
         print("\nFiles collected: {}".format(len(found_files)))
         self.idv_attributes = [Utils.get_file_metadata(x) for x in found_files]
         self.search_summary = {
@@ -254,9 +241,11 @@ class ArqRel:
         self.search_completed = True
         self.create_json_logs()
 
+    # Search for files starting from the base directory
     def run_search(self) -> None:
         if self.search_completed:
             print("Error - Search already done for this instance")
+            return
         if not self.search_completed:
             search_queue: List[Path] = [self.starting_dir]
             found_files: List[Path] = []
@@ -284,9 +273,9 @@ class ArqRel:
 
             self.time_finish = datetime.now()
             self.time_taken = self.time_finish - self.time_begin
-            self._finalize_search(found_files)
+            self._fmt_search_results(found_files)
 
-
+# Program entry
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="CLI")
     parser.add_argument('--path', type=str, required=True, help='Starting directory path')
