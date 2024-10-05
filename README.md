@@ -1,5 +1,5 @@
 ## About
-What this program does:
+*What this program does:*
 
 ***I.*** Initiates a search for files in the path specified by the user.
 
