@@ -110,25 +110,25 @@ class Utils:
         return metadata
 
 class ArqRel:
-    search_completed: bool
-    cli_verbose_mode: bool
-    summary_only: bool
-    time_begin: datetime
-    time_finish: datetime
-    time_taken: datetime
-    starting_dir: Path
-    found_files_total: int
-    found_dirs_total: int
-    found_win_exe: int
-    found_win_bat: int
-    found_win_office: int
-    found_media: int
-    found_sources: int
-    found_config: int
-    found_bytecode: int
-    found_bin_other: int
-    files_stats: List[Dict]
-    summary: dict
+    #  search_completed: bool
+    #  cli_verbose_mode: bool
+    #  summary_only: bool
+    #  time_begin: datetime
+    #  time_finish: datetime
+    #  time_taken: datetime
+    #  starting_dir: Path
+    #  found_files_total: int
+    #  found_dirs_total: int
+    #  found_win_exe: int
+    #  found_win_bat: int
+    #  found_win_office: int
+    #  found_media: int
+    #  found_sources: int
+    #  found_config: int
+    #  found_bytecode: int
+    #  found_bin_other: int
+    #  idv_attributes: List[Dict]
+    #  search_summary: dict
     def __init__(self) -> None:
         self.search_completed = False
         self.cli_verbose_mode = False
@@ -149,11 +149,11 @@ class ArqRel:
         self.found_bytecode = 0
         self.found_linux_sh = 0
         self.data_from_search = []
-        self.summary = {}
-        self.summary_only = False
+        self.search_summary = {}
+        self.search_summary_only = False
 
     def set_summary_only(self, val: bool) -> None:
-        self.summary_only = val
+        self.search_summary_only = val
 
     def set_cli_verbose_mode(self, val: bool) -> None:
         self.cli_verbose_mode = val
@@ -177,11 +177,11 @@ class ArqRel:
         this_log_dir: Path = logs_dir / f"{timestamp}"
         this_log_dir.mkdir()
         summary_json: Path = this_log_dir / "summary.json"
-        files_stats_json: Path = this_log_dir / "files_stats.json"
+        attributes_json: Path = this_log_dir / "attributes.json"
         summary_json.touch()
-        files_stats_json.touch()
-        Utils.json_dump(files_stats_json, self.files_stats)
-        Utils.json_dump(summary_json, self.summary)
+        attributes_json.touch()
+        Utils.json_dump(attributes_json, self.idv_attributes)
+        Utils.json_dump(summary_json, self.search_summary)
         print(f"New log created at: {this_log_dir}")
 
     def _categorize_file(self, file_path: str) -> None:
@@ -232,8 +232,8 @@ class ArqRel:
 
     def _finalize_search(self, found_files: List[Path]) -> None:
         print("\nFiles collected: {}".format(len(found_files)))
-        self.files_stats = [Utils.get_file_metadata(x) for x in found_files]
-        self.summary = {
+        self.idv_attributes = [Utils.get_file_metadata(x) for x in found_files]
+        self.search_summary = {
             "dirs": self.found_dirs_total,
             "files": self.found_files_total,
             "sources": self.found_sources,
@@ -250,7 +250,7 @@ class ArqRel:
             "end_time": Utils.get_fmt_datetime(self.time_finish),
             "time_taken": str(self.time_taken),
         }
-        pprint.pprint(self.summary)
+        pprint.pprint(self.search_summary)
         self.search_completed = True
         self.create_json_logs()
 
