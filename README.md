@@ -13,9 +13,10 @@ What this program does:
 To run the program, invoke the Python interpreter, specify the program name, and include a --path flag followed by the path (no quotes) of the directory you wish to search:
 
 **Example:**
-    ```shell
-    `python3 arqrel.py --path [insert path]`
-
+```shell
+python3 arqrel.py --path [insert path]
+```
 **Example 2 (verbose mode):**
-    ```shell
-    `python3 arqrel.py -v --path [insert path]`
+```shell
+python3 arqrel.py -v --path [insert path]
+```
