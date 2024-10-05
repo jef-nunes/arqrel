@@ -117,7 +117,7 @@ class Utils:
         return metadata
 
 class ArqRel:
-    # Initialize instance variables to track file and directory search results
+    # Initialize instance variables
     def __init__(self) -> None:
         self.search_completed: bool = False
         self.cli_verbose_mode: bool = False
