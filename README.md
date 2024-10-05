@@ -1,4 +1,4 @@
-About
+## About
 
 What this program does:
 
@@ -22,7 +22,7 @@ III. At the end of the search, two reports are generated:
     summary.json: a summary of the results.
     attributes.json: details about each file found.
 
-Running
+## Running
 
 To run the program, invoke the Python interpreter, specify the program name, and include a --path flag followed by the path (without quotes) of the directory you wish to search:
 
