@@ -1,4 +1,4 @@
-## Sobre
+## 🐉 Sobre
 
 O que esse programa faz:
 
