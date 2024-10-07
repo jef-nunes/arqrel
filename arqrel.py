@@ -1,5 +1,5 @@
 from pathlib import Path
-from os import scandir, stat
+from os import scandir, stat, name as running_platform
 from typing import Dict, List, Tuple
 from datetime import datetime
 from hashlib import sha256
@@ -110,17 +110,22 @@ class Utils:
     @classmethod
     def get_file_metadata(cls, file_path: str) -> Dict[str, any]:
         _stat = stat(file_path)
+        _creation_time: str
+        if running_platform == "posix":
+            _creation_time = "?"
+        elif running_platform == "nt":
+            _creation_time = cls.get_fmt_datetime(datetime.fromtimestamp(_stat.st_birthtime))
         metadata: Dict = {
             "name": Path(file_path).name,
             "size_bytes": _stat.st_size,
             "permissions": oct(_stat.st_mode & 0o777),
-            "creation_time": cls.get_fmt_datetime(datetime.fromtimestamp(_stat.st_birthtime)),
+            "creation_time": _creation_time,
             "last_access_time": cls.get_fmt_datetime(datetime.fromtimestamp(_stat.st_atime)),
             "last_modify_time": cls.get_fmt_datetime(datetime.fromtimestamp(_stat.st_mtime))
         }
         size_value, size_unit = cls.get_fmt_size_tuple(file_path)
         last_dot_index: int = str(metadata["name"]).rfind(".")
-        extension = metadata["name"][last_dot_index+1:]
+        extension = metadata["name"][last_dot_index+1:] if "." in metadata["name"] else "?"
         metadata["extension"] = extension 
         metadata["size_fmt"] = f"{round(size_value, 2)} {size_unit}"
         metadata["hash"] = cls.hash_sum(file_path)
