@@ -7,48 +7,59 @@ import argparse
 import json
 import pprint
 
+
 class Utils:
     # Predefined file extensions for different categories
-    config_extensions = [
-        '.code-workspace', '.sln', '.csproj', '.vbproj', '.xcodeproj',
-        '.apkproject', '.gradle', '.iml', '.project', '.classpath',
-        '.makefile', '.json', '.yaml', '.toml', '.editorconfig',
-        '.vscode', '.env', '.xml', '.proto', '.ini', '.cfg', '.properties', '.git'
-    ]
-
-    linux_shell_extensions = [
-        '.bash', '.zsh', '.sh', '.ksh', '.csh', '.tcsh'
-    ]
-
-    source_extensions = [
-        '.py', '.pyw', '.js', '.jsx', '.ts', '.tsx', '.rb', '.php',
-        '.java', '.c', '.cc', '.cpp', '.h', '.hpp', '.cs', '.go',
-        '.rs', '.pl', '.R', '.r', '.swift', '.kt', '.lua', '.html', 
-        '.css', '.sql', '.vb', '.asm', '.m', '.tcl', '.dart', '.scala', 
-        '.groovy', '.clj', '.swift'
-    ]
-
-    bytecode_extensions = [
-        '.jar', '.pyc', '.class', '.pyo', '.pyd'
-    ]
-    win_exe_extension = ".exe"
-    win_bat_extension = ".bat"
-    win_pwshell_extension = ".ps1"
-    win_office_extensions = [
-        ".docx", ".xlsx", ".pptx", ".doc", ".xls", ".ppt"
-    ]
-
-    media_extensions = [
-        ".mp3", ".gimp", ".png", ".svg", ".jpeg", ".jpg", 
-        ".gif", ".bmp", ".mp4", ".avi", ".mkv", ".flv", ".wav"
-    ]
-
-    other_bin_extensions = [
-        '.bin', '.out', '.so', '.a', '.o', '.elf', '.img',
-        '.tar', '.gz', '.bz2', '.xz', '.zip', '.sh',
-        '.apk', '.ipa', '.app', '.dex', '.aab',
-        '.dll', '.iso', '.dmg', '.rpm', '.deb', '.msi'
-    ]
+    file_extensions = {
+            "config": [
+                ".apkproject", ".code-workspace", ".classpath", ".csproj",
+                ".csv", ".dat", ".deb", ".editorconfig", ".env", 
+                ".git", ".gradle", ".iml", ".ini", ".json", 
+                ".makefile", ".pbix", ".pbit", ".properties", 
+                ".project", ".sln", ".toml", ".vscode", ".xml", 
+                ".yaml", ".txt"
+            ],
+            "linux_shell": [
+                ".bash", ".csh", ".ksh", ".sh", ".tcsh", ".zsh"
+            ],
+            "source": [
+                ".asm", ".c", ".cc", ".cs", ".dart", ".for", 
+                ".go", ".groovy", ".html", ".java", ".js", 
+                ".jsx", ".kt", ".lua", ".m", ".makefile", 
+                ".njs", ".pl", ".pas", ".py", ".pyw", 
+                ".r", ".R", ".rb", ".rs", ".scala", 
+                ".sh", ".swift", ".tcl", ".tsx", ".vb", 
+                ".v", ".xml", ".yaml", ".json5", ".ipynb"
+            ],
+            "bytecode": [
+                ".class", ".jar", ".pyo", ".pyc", ".pyd"
+            ],
+            "windows_exe": ".exe",
+            "windows_bat": ".bat",
+            "windows_powershell": ".ps1",
+            "office": [
+                ".doc", ".docx", ".ppt", ".pptx", ".xls", 
+                ".xlsx", ".pbix", ".pbit"
+            ],
+            "media": [
+                ".aac", ".avi", ".bmp", ".flac", ".gif", 
+                ".gimp", ".jpeg", ".jpg", ".m4a", ".mkv", 
+                ".mp3", ".mp4", ".ogg", ".svg", ".tiff", 
+                ".wav", ".webm", ".wmv"
+            ],
+            "fonts": [
+                ".dfont", ".eot", ".otf", ".sfnt", ".ttf", 
+                ".woff", ".woff2"
+            ],
+            "other_binary": [
+                ".a", ".apk", ".app", ".bin", ".bz2", 
+                ".deb", ".dmg", ".dll", ".dex", ".elf", 
+                ".gz", ".img", ".iso", ".jar", ".msi", 
+                ".msm", ".out", ".o", ".rpm", ".sh", 
+                ".sql.gz", ".sqlite", ".sqlite3", ".tar", 
+                ".zip", ".xz"
+            ]
+        }
 
      # Load JSON data from a file
     @classmethod
@@ -137,6 +148,8 @@ class ArqRel:
         self.found_bin_other: int = 0
         self.found_bytecode: int = 0
         self.found_linux_sh: int = 0
+        self.found_fonts: int = 0
+        self.found_unknown: int = 0
         self.idv_attributes: List[Dict] = []
         self.search_summary: Dict = {}
 
@@ -172,67 +185,77 @@ class ArqRel:
     # Categorize a file based on its extension and count the occurrence
     def _categorize_file(self, file_path: str) -> None:
         name = Path(file_path).name
-        extension: str = name[name.rfind(".")+1:]
+        extension: str = name[name.rfind(".") + 1:]
         x = f".{extension}"
 
-        if x in Utils.source_extensions:
+        if x in Utils.file_extensions["source"]:
             if self.cli_verbose_mode:
                 print(f"Found a source code file: '{file_path}'")
             self.found_sources += 1
-        elif x in Utils.linux_shell_extensions:
+        elif x in Utils.file_extensions["linux_shell"]:
             if self.cli_verbose_mode:
                 print(f"Found a Linux shell script file: '{file_path}'")
             self.found_linux_sh += 1
-        elif x == Utils.win_pwshell_extension:
+        elif x == Utils.file_extensions["windows_powershell"]:
             if self.cli_verbose_mode:
                 print(f"Found a Windows PowerShell file: '{file_path}'")
             self.found_win_pwshell += 1
-        elif x in Utils.other_bin_extensions:
+        elif x in Utils.file_extensions["other_binary"]:
             if self.cli_verbose_mode:
                 print(f"Found a binary file: '{file_path}'")
             self.found_bin_other += 1
-        elif x in Utils.bytecode_extensions:
+        elif x in Utils.file_extensions["bytecode"]:
             if self.cli_verbose_mode:
                 print(f"Found a bytecode file: '{file_path}'")
             self.found_bytecode += 1
-        elif x in Utils.config_extensions:
+        elif x in Utils.file_extensions["config"]:
             if self.cli_verbose_mode:
                 print(f"Found a config file: '{file_path}'")
             self.found_config += 1
-        elif x in Utils.media_extensions:
+        elif x in Utils.file_extensions["media"]:
             if self.cli_verbose_mode:
                 print(f"Found a media file: '{file_path}'")
             self.found_media += 1
-        elif x == Utils.win_exe_extension:
+        elif x == Utils.file_extensions["windows_exe"]:
             if self.cli_verbose_mode:
                 print(f"Found a Windows executable: '{file_path}'")
             self.found_win_exe += 1
-        elif x == Utils.win_bat_extension:
+        elif x == Utils.file_extensions["windows_bat"]:
             if self.cli_verbose_mode:
                 print(f"Found a Windows batch file: '{file_path}'")
             self.found_win_bat += 1
-        elif x in Utils.win_office_extensions:
+        elif x in Utils.file_extensions["office"]:
             if self.cli_verbose_mode:
                 print(f"Found a Microsoft Office file: '{file_path}'")
             self.found_win_office += 1
+        elif x in Utils.file_extensions["fonts"]:
+            if self.cli_verbose_mode:
+                print(f"Found a font file: '{file_path}'")
+            self.found_fonts += 1
+        else:
+            if self.cli_verbose_mode:
+                print(f"Found a file with unknown type: '{file_path}'")
+            self.found_unknown += 1
 
     # Format search results
     def _fmt_search_results(self, found_files: List[Path]) -> None:
         print("\nFiles collected: {}".format(len(found_files)))
         self.idv_attributes = [Utils.get_file_metadata(x) for x in found_files]
         self.search_summary = {
-            "dirs": self.found_dirs_total,
-            "files": self.found_files_total,
-            "sources": self.found_sources,
+            "total_dirs": self.found_dirs_total,
+            "total_files": self.found_files_total,
+            "source_code": self.found_sources,
             "config": self.found_config,
-            "linux_sh": self.found_linux_sh,
-            "bin": self.found_bin_other,
-            "media": self.found_media,
             "bytecode": self.found_bytecode,
+            "linux_shell": self.found_linux_sh,
             "win_exe": self.found_win_exe,
             "win_bat": self.found_win_bat,
             "win_powershell": self.found_win_pwshell,
             "win_office": self.found_win_office,
+            "media": self.found_media,
+            "fonts": self.found_fonts,
+            "bin_other": self.found_bin_other,
+            "unknown_file_type": self.found_unknown,
             "start_time": Utils.get_fmt_datetime(self.time_begin),
             "end_time": Utils.get_fmt_datetime(self.time_finish),
             "time_taken": str(self.time_taken),
