@@ -15,7 +15,7 @@
 ```sh
 python3 arqrel.py --path [insert path]
 ```
-**Example 2 (verbose mode):**
+**Example 2, using relativ path and verbose mode:**
 ```sh
-python3 arqrel.py -v --path [insert path]
+python3 arqrel.py -v --path .
 ```
