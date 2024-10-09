@@ -11,7 +11,8 @@
 
 ## Running
 Every program run must include the "--path" flag followed by the path to a valid directory<br>
-Examples:
+
+Example:
 
 **1. basic running:**
 ```sh
