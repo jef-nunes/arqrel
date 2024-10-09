@@ -10,7 +10,7 @@
 + attributes.json: attributes details for each file found.<br>
 
 ## Running
-Every program run must include the "--path" flag followed by the path to a valid directory
+Every program run must include the "--path" flag followed by the path to a valid directory<br>
 Examples:
 
 **1. basic running:**
