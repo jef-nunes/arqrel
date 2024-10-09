@@ -10,7 +10,6 @@
 + attributes.json: attributes details for each file found.<br>
 
 ## Running
-To run the program, invoke the Python interpreter, specify the program name, and include a --path flag followed by the path (no quotes) of the directory you wish to search:
 
 **Example:**
 ```sh
