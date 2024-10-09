@@ -10,12 +10,14 @@
 + attributes.json: attributes details for each file found.<br>
 
 ## Running
+Every program run must include the "--path" flag followed by the path to a valid directory
+Examples:
 
-**Example:**
+**basic running:**
 ```sh
 python3 arqrel.py --path [insert path]
 ```
-**Example 2 - using relative path and verbose mode:**
+**using relative path and verbose search logging:**
 ```sh
 python3 arqrel.py -v --path .
 ```
