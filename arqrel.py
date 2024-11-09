@@ -16,7 +16,7 @@ class Utils:
                 ".csv", ".dat", ".deb", ".editorconfig", ".env", 
                 ".git", ".gradle", ".iml", ".ini", ".json", 
                 ".makefile", ".pbix", ".pbit", ".properties", 
-                ".project", ".sln", ".toml", ".vscode", ".xml", 
+                ".project", "proto", ".sln", ".toml", ".vscode", ".xml", 
                 ".yaml", ".txt"
             ],
             "linux_shell": [
