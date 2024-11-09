@@ -18,7 +18,7 @@ Example:
 ```sh
 python3 arqrel.py --path [insert path]
 ```
-**2. using relative path and verbose search logging:**
+**2. using relative path and real time logging:**
 ```sh
 python3 arqrel.py -v --path .
 ```
