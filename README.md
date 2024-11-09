@@ -1,9 +1,9 @@
 ## About
 *What this program does:*
 
-**I.** Initiates a search for files in the path specified by the user.
+**I.** Initiates a search for files in the directory specified by the user.
 
-**II.** For each file found, it creates a formatted dictionary containing the file's attributes. It also adds a SHA256 hash attribute and a classification attribute, based on file extension.
+**II.** For each found file, it creates a formatted dictionary containing the file's attributes. It also adds a SHA256 hash attribute and a classification attribute, based on file extension.
 
 **III.** At the end of the search, two reports are generated:<br>
 + summary.json: a summary of the results.<br>
