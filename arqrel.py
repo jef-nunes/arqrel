@@ -9,7 +9,7 @@ import pprint
 
 
 class Utils:
-    # Predefined file extensions for different categories
+    # Extensões de arquivos predefinidas para diferentes categorias
     file_extensions = {
             "config": [
                 ".apkproject", ".code-workspace", ".classpath", ".csproj",
@@ -61,19 +61,19 @@ class Utils:
             ]
         }
 
-     # Load JSON data from a file
+    # Carregar dados JSON de um arquivo
     @classmethod
     def json_parse(cls, file_path: str) -> dict:
         with open(file_path, 'r') as file:
             return json.load(file)
     
-    # Dump JSON data into a file
+    # Salvar dados JSON em um arquivo
     @classmethod
     def json_dump(cls, file_path: str, data: dict) -> None:
         with open(file_path, 'w') as f:
             json.dump(data, f, indent=4)
     
-    # Calculate SHA-256 hash of a file
+    # Calcular o hash SHA-256 de um arquivo
     @classmethod
     def hash_sum(cls, target: str) -> str:
         hash_object = sha256()
@@ -82,11 +82,11 @@ class Utils:
                 for block in iter(lambda: f.read(1024 * 1024), b""):
                     hash_object.update(block)
         except OSError as e:
-            print(f"Error reading file {target}: {e}")
-            return "Error"
+            print(f"Erro ao ler o arquivo {target}: {e}")
+            return "Erro"
         return hash_object.hexdigest()
 
-    # Return a tuple with formatted file size
+    # Retornar uma tupla com o tamanho do arquivo formatado
     @classmethod
     def get_fmt_size_tuple(cls, target_path: str) -> Tuple[float, str]:
         size = float(Path(target_path).stat().st_size)
@@ -99,14 +99,14 @@ class Utils:
         else:
             return size / (1024 * 1024 * 1024), "GB"
 
-    # Format datetime as string
+    # Formatar data/hora como string
     @classmethod
     def get_fmt_datetime(cls, dt: datetime = datetime.now()) -> str:
         if dt is None:
             return "N/A"
         return dt.strftime("%Y-%m-%d %H:%M:%S")
 
-    # Gather metadata of a file, including hash, permissions, and size
+    # Recolher metadados de um arquivo, incluindo hash, permissões e tamanho
     @classmethod
     def get_file_metadata(cls, file_path: str) -> Dict[str, any]:
         _stat = stat(file_path)
@@ -133,14 +133,14 @@ class Utils:
         return metadata
 
 class ArqRel:
-    # Initialize instance variables
+    # Inicializa as variáveis de instância
     def __init__(self) -> None:
-        self.search_completed: bool = False
-        self.cli_verbose_mode: bool = False
-        self.starting_dir: Path = None
-        self.time_begin: datetime = None
-        self.time_finish: datetime = None
-        self.time_taken: datetime = None
+        self.busca_terminada: bool = False
+        self.logs_de_terminal: bool = False
+        self.diretorio_inicial: Path = None
+        self.tempo_inicio: datetime = None
+        self.tempo_fim: datetime = None
+        self.tempo_total: datetime = None
         self.found_dirs_total = 0
         self.found_files_total: int = 0
         self.found_win_exe: int = 0
@@ -155,100 +155,100 @@ class ArqRel:
         self.found_linux_sh: int = 0
         self.found_fonts: int = 0
         self.found_unknown: int = 0
-        self.idv_attributes: List[Dict] = []
-        self.search_summary: Dict = {}
+        self.idv_atributos: List[Dict] = []
+        self.search_estatisticas: Dict = {}
 
-    # Enabling verbose mode
-    def set_cli_verbose_mode(self, val: bool) -> None:
-        self.cli_verbose_mode = val
+    # Ativar o modo verbose
+    def set_logs_terminal(self, val: bool) -> None:
+        self.logs_de_terminal = val
 
-    # Set the starting directory for the search and validate the path
-    def set_starting_dir(self, StrPath: str) -> None:
+    # Definir o diretório de início para a busca e validar o caminho
+    def set_diretorio_inicial(self, StrPath: str) -> None:
         if not Path(StrPath).exists() or not Path(StrPath).is_dir():
-            print("Error - Invalid path.")
+            print("Erro - Caminho inválido.")
             return
-        self.starting_dir = Path(StrPath)
+        self.diretorio_inicial = Path(StrPath)
 
-    # Create JSON logs for the search
-    def create_json_logs(self) -> None:
+    # Criar logs em JSON para a busca
+    def salvar_resultados(self) -> None:
         now = datetime.now()
         timestamp: str = now.strftime("%Y-%m-%d_%H-%M-%S")
-        app_dir: Path = Path(__file__).parent
-        logs_dir: Path = app_dir / "logs"
-        if not logs_dir.is_dir():
-            logs_dir.mkdir()
-        this_log_dir: Path = logs_dir / f"{timestamp}"
-        this_log_dir.mkdir()
-        summary_json: Path = this_log_dir / "summary.json"
-        attributes_json: Path = this_log_dir / "attributes.json"
-        summary_json.touch()
-        attributes_json.touch()
-        Utils.json_dump(attributes_json, self.idv_attributes)
-        Utils.json_dump(summary_json, self.search_summary)
-        print(f"New log created at: {this_log_dir}")
+        BASE_DIR: Path = Path(__file__).parent
+        dir_resultados: Path = BASE_DIR / "logs"
+        if not dir_resultados.is_dir():
+            dir_resultados.mkdir()
+        dir_este_resultado: Path = dir_resultados / f"{timestamp}"
+        dir_este_resultado.mkdir()
+        estatisticas_json: Path = dir_este_resultado / "estatisticas.json"
+        atributos_json: Path = dir_este_resultado / "atributos.json"
+        estatisticas_json.touch()
+        atributos_json.touch()
+        Utils.json_dump(atributos_json, self.idv_atributos)
+        Utils.json_dump(estatisticas_json, self.search_estatisticas)
+        print(f"Novo log criado em: {dir_este_resultado}")
 
-    # Categorize a file based on its extension and count the occurrence
-    def _categorize_file(self, file_path: str) -> None:
+    # Categorizar um arquivo com base na sua extensão e contar as ocorrências
+    def _categorizar_arquivo(self, file_path: str) -> None:
         name = Path(file_path).name
         extension: str = name[name.rfind(".") + 1:]
         x = f".{extension}"
 
         if x in Utils.file_extensions["source"]:
-            if self.cli_verbose_mode:
-                print(f"Found a source code file: '{file_path}'")
+            if self.logs_de_terminal:
+                print(f"Arquivo de código fonte encontrado: '{file_path}'")
             self.found_sources += 1
         elif x in Utils.file_extensions["linux_shell"]:
-            if self.cli_verbose_mode:
-                print(f"Found a Linux shell script file: '{file_path}'")
+            if self.logs_de_terminal:
+                print(f"Arquivo de script Linux encontrado: '{file_path}'")
             self.found_linux_sh += 1
         elif x == Utils.file_extensions["windows_powershell"]:
-            if self.cli_verbose_mode:
-                print(f"Found a Windows PowerShell file: '{file_path}'")
+            if self.logs_de_terminal:
+                print(f"Arquivo PowerShell do Windows encontrado: '{file_path}'")
             self.found_win_pwshell += 1
         elif x in Utils.file_extensions["other_binary"]:
-            if self.cli_verbose_mode:
-                print(f"Found a binary file: '{file_path}'")
+            if self.logs_de_terminal:
+                print(f"Arquivo binário encontrado: '{file_path}'")
             self.found_bin_other += 1
         elif x in Utils.file_extensions["bytecode"]:
-            if self.cli_verbose_mode:
-                print(f"Found a bytecode file: '{file_path}'")
+            if self.logs_de_terminal:
+                print(f"Arquivo de bytecode encontrado: '{file_path}'")
             self.found_bytecode += 1
         elif x in Utils.file_extensions["config"]:
-            if self.cli_verbose_mode:
-                print(f"Found a config file: '{file_path}'")
+            if self.logs_de_terminal:
+                print(f"Arquivo de configuração encontrado: '{file_path}'")
             self.found_config += 1
         elif x in Utils.file_extensions["media"]:
-            if self.cli_verbose_mode:
-                print(f"Found a media file: '{file_path}'")
+            if self.logs_de_terminal:
+                print(f"Arquivo de mídia encontrado: '{file_path}'")
             self.found_media += 1
         elif x == Utils.file_extensions["windows_exe"]:
-            if self.cli_verbose_mode:
-                print(f"Found a Windows executable: '{file_path}'")
+            if self.logs_de_terminal:
+                print(f"Executável do Windows encontrado: '{file_path}'")
             self.found_win_exe += 1
         elif x == Utils.file_extensions["windows_bat"]:
-            if self.cli_verbose_mode:
-                print(f"Found a Windows batch file: '{file_path}'")
+            if self.logs_de_terminal:
+                print(f"Arquivo batch do Windows encontrado: '{file_path}'")
             self.found_win_bat += 1
         elif x in Utils.file_extensions["office"]:
-            if self.cli_verbose_mode:
-                print(f"Found a Microsoft Office file: '{file_path}'")
+            if self.logs_de_terminal:
+                print(f"Arquivo Microsoft Office encontrado: '{file_path}'")
             self.found_win_office += 1
         elif x in Utils.file_extensions["fonts"]:
-            if self.cli_verbose_mode:
-                print(f"Found a font file: '{file_path}'")
+            if self.logs_de_terminal:
+                print(f"Arquivo de fonte encontrado: '{file_path}'")
             self.found_fonts += 1
         else:
-            if self.cli_verbose_mode:
-                print(f"Found a file with unknown type: '{file_path}'")
+            if self.logs_de_terminal:
+                print(f"Arquivo com tipo desconhecido encontrado: '{file_path}'")
             self.found_unknown += 1
 
-    # Format search results
+    # Formatar os resultados da busca
     def _fmt_search_results(self, found_files: List[Path]) -> None:
-        print("\nFiles collected: {}".format(len(found_files)))
-        self.idv_attributes = [Utils.get_file_metadata(x) for x in found_files]
-        self.search_summary = {
+        print("\nArquivos coletados: {}".format(len(found_files)))
+        self.idv_atributos = [Utils.get_file_metadata(x) for x in found_files]
+        self.search_estatisticas = {
             "total_dirs": self.found_dirs_total,
-            "total_files": self.found_files_total,
+            "total_arquivos": self.found_files_total,
             "source_code": self.found_sources,
             "config": self.found_config,
             "bytecode": self.found_bytecode,
@@ -261,56 +261,56 @@ class ArqRel:
             "fonts": self.found_fonts,
             "bin_other": self.found_bin_other,
             "unknown_file_type": self.found_unknown,
-            "start_time": Utils.get_fmt_datetime(self.time_begin),
-            "end_time": Utils.get_fmt_datetime(self.time_finish),
-            "time_taken": str(self.time_taken),
+            "tempo_inicio": Utils.get_fmt_datetime(self.tempo_inicio),
+            "tempo_fim": Utils.get_fmt_datetime(self.tempo_fim),
+            "tempo_total": str(self.tempo_total),
         }
-        pprint.pprint(self.search_summary)
-        self.search_completed = True
-        self.create_json_logs()
+        pprint.pprint(self.search_estatisticas)
+        self.busca_terminada = True
+        self.salvar_resultados()
 
-    # Search for files starting from the base directory
-    def run_search(self) -> None:
-        if self.search_completed:
-            print("Error - Search already done for this instance")
+    # Realizar a busca de arquivos a partir do diretório base
+    def entrada(self) -> None:
+        if self.busca_terminada:
+            print("Erro - A busca já foi concluída para esta instância")
             return
-        if not self.search_completed:
-            search_queue: List[Path] = [self.starting_dir]
+        if not self.busca_terminada:
+            search_queue: List[Path] = [self.diretorio_inicial]
             found_files: List[Path] = []
-            self.time_begin = datetime.now()
-            print("Search started on {}\n".format(Utils.get_fmt_datetime()))
+            self.tempo_inicio = datetime.now()
+            print("Busca iniciada em {}\n".format(Utils.get_fmt_datetime()))
 
             while search_queue:
                 current_dir = search_queue.pop(0)
-                if self.cli_verbose_mode:
-                    print(f"Searching on '{current_dir}'")
+                if self.logs_de_terminal:
+                    print(f"Buscando em '{current_dir}'")
                 try:
                     with scandir(current_dir) as it:
                         for entry in it:
                             if entry.is_dir():
                                 search_queue.append(entry.path)
                                 self.found_dirs_total += 1
-                                if self.cli_verbose_mode:
-                                    print(f"Found a directory at '{entry.path}'")
+                                if self.logs_de_terminal:
+                                    print(f"Diretório encontrado em '{entry.path}'")
                             elif entry.is_file():
                                 found_files.append(entry.path)
                                 self.found_files_total += 1
-                                self._categorize_file(entry.path)
+                                self._categorizar_arquivo(entry.path)
                 except OSError as e:
-                    print(f"Error accessing directory {current_dir}: {e}")
+                    print(f"Erro ao acessar o diretório {current_dir}: {e}")
 
-            self.time_finish = datetime.now()
-            self.time_taken = self.time_finish - self.time_begin
+            self.tempo_fim = datetime.now()
+            self.tempo_total = self.tempo_fim - self.tempo_inicio
             self._fmt_search_results(found_files)
 
-# Program entry
+# Entrada do programa
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="CLI")
-    parser.add_argument('--path', type=str, required=True, help='Starting directory path')
-    parser.add_argument('-v', '--verbose', action='store_true', help='Activate verbose logs')
+    parser.add_argument('--path', type=str, required=True, help='Caminho do diretório inicial')
+    parser.add_argument('-v', '--verbose', action='store_true', help='Ativar logs detalhados')
     args = parser.parse_args()
     arq_rel = ArqRel()
     if args.verbose:
-        arq_rel.set_cli_verbose_mode(True)
-    arq_rel.set_starting_dir(args.path)
-    arq_rel.run_search()
+        arq_rel.set_logs_terminal(True)
+    arq_rel.set_diretorio_inicial(args.path)
+    arq_rel.entrada()
