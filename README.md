@@ -1,24 +1,18 @@
-## About
-*What this program does:*
+## Sobre
+*O que este programa faz:*
 
-**I.** Initiates a search for files in the directory specified by the user.
+**I.** Inicia uma analise de arquivos no diretório especificado pelo usuário.
 
-**II.** For each found file, it creates a formatted dictionary containing the file's attributes. It also adds a SHA256 hash attribute and a classification attribute, based on file extension.
+**II.** Para cada arquivo encontrado, cria um dicionário formatado contendo os atributos do arquivo. Também adiciona um atributo de hash SHA256 e um atributo de classificação, baseado na extensão do arquivo.
 
-**III.** At the end of the search, two reports are generated:<br>
-+ summary.json: a summary of the results.<br>
-+ attributes.json: attributes details for each file found.<br>
+**III.** Ao final da busca, são gerados dois relatórios:<br>
++ summary.json: um resumo dos resultados.<br>
++ attributes.json: detalhes dos atributos de cada arquivo encontrado.<br>
 
-## Running
-Every program run must include the "--path" flag followed by the path to a valid directory<br>
+## Executando
+Ao executar do programa um argumento "--path" deve ser passado com o caminho do diretório onde o programa irá analisar os arquivos, seguida pelo caminho para um diretório válido.<br>
 
-Example:
+Exemplo:
 
-**1. basic running:**
 ```sh
-python3 arqrel.py --path [insert path]
-```
-**2. using relative path and real time logging:**
-```sh
-python3 arqrel.py -v --path .
-```
+python3 arqrel.py --path [insira o caminho]
