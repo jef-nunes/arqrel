@@ -10,7 +10,7 @@
 + atributos.json: detalhes dos atributos de cada arquivo encontrado.<br>
 
 ## Executando
-Ao executar do programa um argumento "--path" deve ser passado com o caminho do diretório onde o programa irá analisar os arquivos, seguida pelo caminho para um diretório válido.<br>
+Ao executar o programa o argumento "--path" deve ser passado, contendo o caminho do diretório no qual o programa irá analisar os arquivos.<br>
 
 Exemplo:
 
