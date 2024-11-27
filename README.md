@@ -6,7 +6,7 @@
 **II.** Para cada arquivo encontrado, cria um dicionário formatado contendo os atributos do arquivo. Também adiciona um atributo de hash SHA256 e um atributo de classificação, baseado na extensão do arquivo.
 
 **III.** Ao final da busca, são gerados dois relatórios:<br>
-+ estatisticas.json: um resumo dos resultados.<br>
++ estatisticas.json: um resumo estatístico dos resultados.<br>
 + atributos.json: detalhes dos atributos de cada arquivo encontrado.<br>
 
 ## Executando
